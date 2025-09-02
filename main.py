@@ -79,22 +79,22 @@ async def save_ncthumbnail(image_data: bytes, memberno: int, size=(80, 100)):
     return thumbnail_path
 
 
-async def get_clublist(db: AsyncSession):
+async def get_classlist(db: AsyncSession):
     try:
         query = text("SELECT * FROM chyClass where attrib not like :attpatt")
         result = await db.execute(query, {"attpatt": "%XXX%"})
-        club_list = result.fetchall()  # 클럽 데이터를 모두 가져오기
-        return club_list
+        class_list = result.fetchall()  # 클럽 데이터를 모두 가져오기
+        return class_list
     except:
         raise HTTPException(status_code=500, detail="Database query failed(CLUBLIST)")
 
 
-async def get_clubboards(classno: int, db: AsyncSession):
+async def get_classboards(classno: int, db: AsyncSession):
     try:
         query = text("SELECT * FROM chyBoard where attrib not like :attpatt AND classno = :classno")
         result = await db.execute(query, {"attpatt": "%XXX%", "classno": classno})
-        clubboards = result.fetchall()  # 클럽 데이터를 모두 가져오기
-        return clubboards
+        classboards = result.fetchall()  # 클럽 데이터를 모두 가져오기
+        return classboards
     except:
         raise HTTPException(status_code=500, detail="Database query failed(CLUBBOARDS)")
 
@@ -153,34 +153,34 @@ async def get_classlist(db: AsyncSession):
     try:
         query = text("SELECT * FROM chyClass where attrib not like :attpatt")
         result = await db.execute(query, {"attpatt": "%XXX%"})
-        club_list = result.fetchall()  # 클럽 데이터를 모두 가져오기
-        return club_list
+        class_list = result.fetchall()  # 클럽 데이터를 모두 가져오기
+        return class_list
     except:
         raise HTTPException(status_code=500, detail="Database query failed(CLASSLIST)")
 
 
-async def get_regionboardlist(region: int, db: AsyncSession):
+async def get_colleageboardlist(colleage: int, db: AsyncSession):
     try:
         query = text(
-            "select lc.clubName , lb.clubNo, GROUP_CONCAT(lb.boardTitle SEPARATOR ',') AS boardDetails, count(lb.boardNo ) from chyBoard lb "
-            "left join chyClass lc on lb.clubNo = lc.clubNo and lc.classNo = :regno  group by lb.clubNo order by lb.clubNo")
-        result = await db.execute(query, {"regno": region})
-        club_list = result.fetchall()  # 클럽 데이터를 모두 가져오기
-        return club_list
+            "select lc.className , lb.classNo, GROUP_CONCAT(lb.boardTitle SEPARATOR ',') AS boardDetails, count(lb.boardNo ) from chyBoard lb "
+            "left join chyClass lc on lb.classNo = lc.classNo and lc.classNo = :regno  group by lb.classNo order by lb.classNo")
+        result = await db.execute(query, {"regno": colleage})
+        class_list = result.fetchall()  # 클럽 데이터를 모두 가져오기
+        return class_list
     except:
-        raise HTTPException(status_code=500, detail="Database query failed(regionCLUBLIST)")
+        raise HTTPException(status_code=500, detail="Database query failed(colleageCLUBLIST)")
 
 
-async def get_regionmemberlist(region: int, db: AsyncSession):
+async def get_colleagememberlist(colleage: int, db: AsyncSession):
     try:
         query = text(
-            "SELECT lm.*, lcc.clubName, lr.rankTitlekor FROM chyMember lm left join chyClass lcc on lm.clubNo = lcc.clubNo "
-            "left join chyRank lr on lm.rankNo = lr.rankNo where lm.clubNo in (select lc.classno from chyClass lc where lc.classNo = :regno) order by lm.clubNo, lm.memberJoindate")
-        result = await db.execute(query, {"regno": region})
+            "SELECT lm.*, lcc.className, lr.rankTitlekor FROM chyMember lm left join chyClass lcc on lm.classNo = lcc.classNo "
+            "left join chyRank lr on lm.rankNo = lr.rankNo where lm.classNo in (select lc.classno from chyClass lc where lc.classNo = :regno) order by lm.classNo, lm.memberJoindate")
+        result = await db.execute(query, {"regno": colleage})
         rmember_list = result.fetchall()  # 클럽 데이터를 모두 가져오기
         return rmember_list
     except:
-        raise HTTPException(status_code=500, detail="Database query failed(regionCLUBLIST)")
+        raise HTTPException(status_code=500, detail="Database query failed(colleageCLUBLIST)")
 
 
 async def get_memberlist(db: AsyncSession):
@@ -202,7 +202,7 @@ async def get_rankmemberlist(rankno: int, db: AsyncSession):
         rankmember_list = result.fetchall()  # 클럽 데이터를 모두 가져오기
         return rankmember_list
     except:
-        raise HTTPException(status_code=500, detail="Database query failed(regionCLUBLIST)")
+        raise HTTPException(status_code=500, detail="Database query failed(colleageCLUBLIST)")
 
 
 async def get_memberdetail(memberon: int, db: AsyncSession):
@@ -215,11 +215,11 @@ async def get_memberdetail(memberon: int, db: AsyncSession):
         raise HTTPException(status_code=500, detail="Database query failed(MemberDtl)")
 
 
-async def get_clubmembercard(classno: int, db: AsyncSession):
+async def get_classmembercard(classno: int, db: AsyncSession):
     try:
         query = text(
             "SELECT lm.*, lr.rankTitlekor FROM chyMember lm LEFT join chyRank lr on lm.rankNo = lr.rankNo where classNo = :class_no")
-        result = await db.execute(query, {"club_no": classno})
+        result = await db.execute(query, {"class_no": classno})
         member_list = result.fetchall()  # 클럽 데이터를 모두 가져오기
         member = [
             {
@@ -237,7 +237,7 @@ async def get_clubmembercard(classno: int, db: AsyncSession):
         raise HTTPException(status_code=500, detail="Database query failed(CLUBMemberCards)")
 
 
-async def get_clubmemberlist(classno: int, db: AsyncSession):
+async def get_classmemberlist(classno: int, db: AsyncSession):
     try:
         query = text(
             "SELECT lm.*, lr.rankTitlekor FROM chyMember lm LEFT join chyRank lr on lm.rankNo = lr.rankNo where classNo = :class_no")
@@ -248,10 +248,10 @@ async def get_clubmemberlist(classno: int, db: AsyncSession):
         raise HTTPException(status_code=500, detail="Database query failed(CLUBMemberList)")
 
 
-async def get_clubdocs(classno: int, db: AsyncSession):
+async def get_classdocs(classno: int, db: AsyncSession):
     try:
         query = text(
-            "SELECT * FROM chyDoc where clubNo = :classno and attrib not like :attrxx")
+            "SELECT * FROM chyDoc where classNo = :classno and attrib not like :attrxx")
         result = await db.execute(query, {"classno": classno, "attrxx": '%XXX%'})
         doc_list = result.fetchall()  # 클럽 데이터를 모두 가져오기
         return doc_list
@@ -259,7 +259,7 @@ async def get_clubdocs(classno: int, db: AsyncSession):
         raise HTTPException(status_code=500, detail="Database query failed(CLUBDocList)")
 
 
-async def get_clubdoc(docno: int, db: AsyncSession):
+async def get_classdoc(docno: int, db: AsyncSession):
     try:
         query = text("SELECT cDocument from chyDoc where docno = :docno")
         result = await db.execute(query, {"docno": docno})
@@ -269,10 +269,10 @@ async def get_clubdoc(docno: int, db: AsyncSession):
         raise HTTPException(status_code=500, detail="Database query failed(CLUBDoc)")
 
 
-async def get_regionlist(db: AsyncSession):
+async def get_colleagelist(db: AsyncSession):
     try:
         query = text(
-            "SELECT lr.*, GROUP_CONCAT(lc.clubName SEPARATOR ', ') AS clubNames, lm.memberName FROM chyaddr.chyRegion lr "
+            "SELECT lr.*, GROUP_CONCAT(lc.className SEPARATOR ', ') AS classNames, lm.memberName FROM chyaddr.chyColleage lr "
             "LEFT JOIN chyaddr.chyClass lc ON lr.classNo = lc.classNo "
             "LEFT JOIN chyaddr.chyMember lm ON lr.chairmanNo = lm.memberNo "
             "where lr.attrib not like :attpatt GROUP BY lr.classNo")
@@ -283,9 +283,9 @@ async def get_regionlist(db: AsyncSession):
         raise HTTPException(status_code=500, detail="Database query failed(DICT)")
 
 
-async def get_clubstaff(classno: int, db: AsyncSession):
+async def get_classstaff(classno: int, db: AsyncSession):
     try:
-        query = text("SELECT * FROM chyClassstaff where clubNo = :classno and attrib not like :attrxx")
+        query = text("SELECT * FROM chyClassstaff where classNo = :classno and attrib not like :attrxx")
         result = await db.execute(query, {"classno": classno, "attrxx": '%XXX%'})
         staff_list = result.fetchone()
         return staff_list
@@ -293,7 +293,7 @@ async def get_clubstaff(classno: int, db: AsyncSession):
         raise HTTPException(status_code=500, detail="Database query failed(CLUBSTAFF)")
 
 
-async def get_clubstaffwithname(classno: int, db: AsyncSession):
+async def get_classstaffwithname(classno: int, db: AsyncSession):
     try:
         query = text(
             "SELECT s.logPeriod, s.slog, "
@@ -316,7 +316,7 @@ async def get_clubstaffwithname(classno: int, db: AsyncSession):
             "LEFT JOIN chyMember fvm ON s.firstViceNo = fvm.memberNo "
             "LEFT JOIN chyMember svm ON s.secondViceNo = svm.memberNo "
             "LEFT JOIN chyMember tvm ON s.thirdViceNo = tvm.memberNo "
-            "WHERE s.clubNo = :classno and s.attrib not like :attrxx")
+            "WHERE s.classNo = :classno and s.attrib not like :attrxx")
         result = await db.execute(query, {"classno": classno, "attrxx": '%XXX%'})
         staff_list = result.fetchone()
         return staff_list
@@ -445,7 +445,7 @@ async def upload_doc(request: Request, classno: int, file: UploadFile = File(...
     try:
         contents = await file.read()
         # 데이터베이스에 저장
-        query = text("INSERT INTO chyDoc (clubNo,cDocument) VALUES (:memno, :docs)")
+        query = text("INSERT INTO chyDoc (classNo,cDocument) VALUES (:memno, :docs)")
         result = await db.execute(query, {"memno": classno, "docs": contents})
         await db.commit()
         return RedirectResponse(f"/doclist/{classno}", status_code=303)
@@ -596,38 +596,36 @@ async def success_page(request: Request):
 async def user_edit(request: Request):
     user_No = request.session.get("user_No")
     user_Name = request.session.get("user_Name")
-    user_region = request.session.get("user_Region")
-    user_classno = request.session.get("user_Classno")
+    user_classno = request.session.get("user_Class")
     if not user_No:
         return RedirectResponse(url="/")
     return templates.TemplateResponse("login/userEdit.html",
-                                      {"request": request, "user_No": user_No, "user_Name": user_Name, "user_region": user_region, "user_classno": user_classno})
+                                      {"request": request, "user_No": user_No, "user_Name": user_Name,  "user_classno": user_classno})
 
 
 @app.get("/userHome", response_class=HTMLResponse)
 async def user_home(request: Request):
     user_No = request.session.get("user_No")
     user_Name = request.session.get("user_Name")
-    user_region = request.session.get("user_Region")
-    user_classno = request.session.get("user_Classno")
+    user_classno = request.session.get("user_Class")
     if not user_No:
         return RedirectResponse(url="/")
     return templates.TemplateResponse("member/mainClass.html",
-                                      {"request": request, "user_No": user_No, "user_Name": user_Name, "user_region": user_region, "user_classno": user_classno})
+                                      {"request": request, "user_No": user_No, "user_Name": user_Name, "user_classno": user_classno})
 
 
 @app.get("/rmemberList/{regno}", response_class=HTMLResponse)
 async def rmemberList(request: Request, regno: int, db: AsyncSession = Depends(get_db)):
     user_No = request.session.get("user_No")
     user_Name = request.session.get("user_Name")
-    user_region = request.session.get("user_Region")
-    user_classno = request.session.get("user_Classno")
-    rmember = await get_regionmemberlist(regno, db)
+    user_colleage = request.session.get("user_Colleage")
+    user_classno = request.session.get("user_Class")
+    rmember = await get_colleagememberlist(regno, db)
     if not user_No:
         return RedirectResponse(url="/")
-    return templates.TemplateResponse("member/regionmemberList.html",
+    return templates.TemplateResponse("member/colleagememberList.html",
                                       {"request": request, "user_No": user_No, "user_Name": user_Name,
-                                       "rmember": rmember, "user_region": user_region, "user_classno": user_classno})
+                                       "rmember": rmember,  "user_classno": user_classno})
 
 
 @app.get("/memberList", response_class=HTMLResponse)
@@ -703,138 +701,130 @@ async def update_memberdtl(request: Request, memberno: int, db: AsyncSession = D
     return RedirectResponse(f"/memberdetail/{memberno}", status_code=303)
 
 
-@app.get("/clubmemberList/{classno}/{clubname}", response_class=HTMLResponse)
-async def memberList(request: Request, classno: int, clubname: str, db: AsyncSession = Depends(get_db)):
+@app.get("/classmemberList/{classno}", response_class=HTMLResponse)
+async def memberList(request: Request, classno: int, db: AsyncSession = Depends(get_db)):
     user_No = request.session.get("user_No")
     user_Name = request.session.get("user_Name")
-    user_region = request.session.get("user_Region")
-    user_classno = request.session.get("user_Classno")
-    cmembers = await get_clubmemberlist(classno, db)
+    user_classno = request.session.get("user_Class")
+    cmembers = await get_classmemberlist(classno, db)
     if not user_No:
         return RedirectResponse(url="/")
     return templates.TemplateResponse("member/memberList.html",
                                       {"request": request, "user_No": user_No, "user_Name": user_Name,
-                                       "clubName": clubname, "cmembers": cmembers, "user_region": user_region, "user_classno": user_classno})
+                                        "cmembers": cmembers,  "user_classno": user_classno})
 
 
-@app.get("/clubmemberCards/{classno}/{clubname}", response_class=HTMLResponse)
-async def memberList(request: Request, classno: int, clubname: str, db: AsyncSession = Depends(get_db)):
+@app.get("/classmemberCards/{classno}", response_class=HTMLResponse)
+async def memberList(request: Request, classno: int, db: AsyncSession = Depends(get_db)):
     user_No = request.session.get("user_No")
     user_Name = request.session.get("user_Name")
-    user_region = request.session.get("user_Region")
-    user_classno = request.session.get("user_Classno")
-    memberList = await get_clubmembercard(classno, db)
+    user_classno = request.session.get("user_Class")
+    memberList = await get_classmembercard(classno, db)
     if not user_No:
         return RedirectResponse(url="/")
     return templates.TemplateResponse("member/memberCards.html",
                                       {"request": request, "user_No": user_No, "user_Name": user_Name,
-                                       "clubName": clubname, "memberList": memberList, "user_region": user_region, "user_classno": user_classno})
+                                       "memberList": memberList,  "user_classno": user_classno})
 
 
-@app.get("/clubList", response_class=HTMLResponse)
-async def clubList(request: Request, db: AsyncSession = Depends(get_db)):
+@app.get("/classList", response_class=HTMLResponse)
+async def classList(request: Request, db: AsyncSession = Depends(get_db)):
     user_No = request.session.get("user_No")
     user_Name = request.session.get("user_Name")
-    user_region = request.session.get("user_Region")
-    user_classno = request.session.get("user_Classno")
+    user_classno = request.session.get("user_Class")
     query = text("SELECT * FROM chyClass where attrib not like '%XXXUP%'")
     result = await db.execute(query)
-    club_list = result.fetchall()  # 클럽 데이터를 모두 가져오기
+    class_list = result.fetchall()  # 클럽 데이터를 모두 가져오기
     if not user_No:
         return RedirectResponse(url="/")
-    return templates.TemplateResponse("admin/clubList.html",
+    return templates.TemplateResponse("admin/classList.html",
                                       {"request": request, "user_No": user_No, "user_Name": user_Name,
-                                       "club_list": club_list, "user_region": user_region, "user_classno": user_classno})
+                                       "class_list": class_list,  "user_classno": user_classno})
 
 
-@app.get("/editclub/{classno}", response_class=HTMLResponse)
-async def editclub(request: Request, classno: int, db: AsyncSession = Depends(get_db)):
+@app.get("/editclass/{classno}", response_class=HTMLResponse)
+async def editclass(request: Request, classno: int, db: AsyncSession = Depends(get_db)):
     user_No = request.session.get("user_No")
     user_Name = request.session.get("user_Name")
-    user_region = request.session.get("user_Region")
-    user_classno = request.session.get("user_Classno")
-    query = text("SELECT * FROM chyClass where clubNo = :clubNo")
-    result = await db.execute(query, {"clubNo": classno})
-    clubdtl = result.fetchone()
-    clubdocs = await get_clubdocs(classno, db)
+    user_classno = request.session.get("user_Class")
+    query = text("SELECT * FROM chyClass where classNo = :classNo")
+    result = await db.execute(query, {"classNo": classno})
+    classdtl = result.fetchone()
     if not user_No:
         return RedirectResponse(url="/")
-    return templates.TemplateResponse("admin/clubDetail.html",
+    return templates.TemplateResponse("admin/classDetail.html",
                                       {"request": request, "user_No": user_No, "user_Name": user_Name,
-                                       "clubdtl": clubdtl, "clubdocs": clubdocs, "user_classno": classno, "user_region": user_region})
+                                       "classdtl": classdtl, "user_classno": user_classno})
 
 
-@app.get("/editclubdoc/{classno}", response_class=HTMLResponse)
-async def editclubdoc(request: Request, classno: int, db: AsyncSession = Depends(get_db)):
+@app.get("/editclassdoc/{classno}", response_class=HTMLResponse)
+async def editclassdoc(request: Request, classno: int, db: AsyncSession = Depends(get_db)):
     user_No = request.session.get("user_No")
     user_Name = request.session.get("user_Name")
-    user_region = request.session.get("user_Region")
-    user_classno = request.session.get("user_Classno")
-    query = text("SELECT * FROM chyClass where clubNo = :clubNo")
-    result = await db.execute(query, {"clubNo": classno})
-    clubdtl = result.fetchone()
+    user_classno = request.session.get("user_Class")
+    query = text("SELECT * FROM chyClass where classNo = :classNo")
+    result = await db.execute(query, {"classNo": classno})
+    classdtl = result.fetchone()
     if not user_No:
         return RedirectResponse(url="/")
-    return templates.TemplateResponse("admin/clubDocs.html",
+    return templates.TemplateResponse("admin/classDocs.html",
                                       {"request": request, "user_No": user_No, "user_Name": user_Name,
-                                       "clubdtl": clubdtl, "user_region": user_region, "user_classno": user_classno})
+                                       "classdtl": classdtl,  "user_classno": user_classno})
 
 
-@app.post("/updateclubdoc/{classno}")
-async def updateclubdoc(request: Request, classno: int, db: AsyncSession = Depends(get_db)):
+@app.post("/updateclassdoc/{classno}")
+async def updateclassdoc(request: Request, classno: int, db: AsyncSession = Depends(get_db)):
     form_data = await request.form()
     data4docs = {
-        "clubNo": classno,
+        "classNo": classno,
         "docType": form_data.get("doctype"),
         "docTitle": form_data.get("title"),
         "cDocument": form_data.get("content"),
     }
-    querys = text(f"SELECT * from chyDoc where clubNo = :clubNo and docType = :docType")
+    querys = text(f"SELECT * from chyDoc where classNo = :classNo and docType = :docType")
     result = await db.execute(querys, data4docs)
     docresult = result.fetchone()
     if docresult:
         queryup = text(
-            f"UPDATE chyDoc SET modDate = :timenow , attrib = :updattrib WHERE clubNo = :classno and docType = :doctype")
+            f"UPDATE chyDoc SET modDate = :timenow , attrib = :updattrib WHERE classNo = :classno and docType = :doctype")
         timenow = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         await db.execute(queryup, {"timenow": timenow, "updattrib": "XXXUPXXXUP", "classno": classno,
                                    "doctype": form_data.get("doctype")})
     query = text(
-        f"INSERT INTO chyDoc (clubNo,docType,docTitle,cDocument) values (:clubNo,:docType,:docTitle,:cDocument)")
+        f"INSERT INTO chyDoc (classNo,docType,docTitle,cDocument) values (:classNo,:docType,:docTitle,:cDocument)")
     await db.execute(query, data4docs)
     await db.commit()
-    return RedirectResponse(f"/editclub/{classno}", status_code=303)
+    return RedirectResponse(f"/editclass/{classno}", status_code=303)
 
 
 @app.get("/popup_doc/{docno}")
 async def get_popup_content(docno: int, db: AsyncSession = Depends(get_db)):
-    cdoc = await get_clubdoc(docno, db)
+    cdoc = await get_classdoc(docno, db)
     print(cdoc)
     if cdoc:
         return HTMLResponse(cdoc)
 
 
-@app.get("/listnotice/{regionno}", response_class=HTMLResponse)
-async def editnotice(request: Request, regionno: int, db: AsyncSession = Depends(get_db)):
+@app.get("/listnotice/{colleageno}", response_class=HTMLResponse)
+async def editnotice(request: Request, colleageno: int, db: AsyncSession = Depends(get_db)):
     user_No = request.session.get("user_No")
     user_Name = request.session.get("user_Name")
-    user_region = request.session.get("user_Region")
-    user_classno = request.session.get("user_Classno")
+    user_classno = request.session.get("user_Class")
     query = text("SELECT * FROM boardMessage where classNo = :classNo and attrib not like '%XXXUP%'")
-    result = await db.execute(query, {"classNo": regionno})
+    result = await db.execute(query, {"classNo": colleageno})
     noticelist = result.fetchall()
     if not user_No:
         return RedirectResponse(url="/")
     return templates.TemplateResponse("board/noticeList.html",
                                       {"request": request, "user_No": user_No, "user_Name": user_Name,
-                                       "notices": noticelist, "user_region": user_region, "user_classno": user_classno})
+                                       "notices": noticelist,  "user_classno": user_classno})
 
 
-@app.get("/addnotice/{regionno}", response_class=HTMLResponse)
-async def addnotice(request: Request, regionno: int, db: AsyncSession = Depends(get_db)):
+@app.get("/addnotice/{colleageno}", response_class=HTMLResponse)
+async def addnotice(request: Request, colleageno: int, db: AsyncSession = Depends(get_db)):
     user_No = request.session.get("user_No")
     user_Name = request.session.get("user_Name")
-    user_region = request.session.get("user_Region")
-    user_classno = request.session.get("user_Classno")
+    user_classno = request.session.get("user_Class")
     now = datetime.now()
     two_weeks = now + timedelta(days=14)
     fmt = '%Y-%m-%dT00:00'
@@ -842,15 +832,14 @@ async def addnotice(request: Request, regionno: int, db: AsyncSession = Depends(
     to_date = two_weeks.strftime(fmt)
     if not user_No:
         return RedirectResponse(url="/")
-    return templates.TemplateResponse("board/addnotice.html",{"request": request, "user_No": user_No, "user_Name": user_Name,"user_region": user_region, "user_classno": user_classno, "from_date": from_date, "to_date": to_date})
+    return templates.TemplateResponse("board/addnotice.html",{"request": request, "user_No": user_No, "user_Name": user_Name, "user_classno": user_classno, "from_date": from_date, "to_date": to_date})
 
 
 @app.get("/editnotice/{messageno}", response_class=HTMLResponse)
 async def editnotice(request:Request, messageno: int, db: AsyncSession = Depends(get_db)):
     user_No = request.session.get("user_No")
     user_Name = request.session.get("user_Name")
-    user_region = request.session.get("user_Region")
-    user_classno = request.session.get("user_Classno")
+    user_classno = request.session.get("user_Class")
     query = text("SELECT * FROM boardMessage where messageNo = :messageno")
     result = await db.execute(query, {"messageno": messageno})
     notice = result.fetchone()
@@ -861,15 +850,14 @@ async def editnotice(request:Request, messageno: int, db: AsyncSession = Depends
     to_date = notice[7] if notice[7] is not None else two_weeks.strftime(fmt)
     if not user_No:
         return RedirectResponse(url="/")
-    return templates.TemplateResponse("board/editnotice.html",{"request": request, "user_No": user_No, "user_Name": user_Name,"user_region": user_region, "user_classno": user_classno, "notice": notice, "from_date": from_date, "to_date": to_date})
+    return templates.TemplateResponse("board/editnotice.html",{"request": request, "user_No": user_No, "user_Name": user_Name, "user_classno": user_classno, "notice": notice, "from_date": from_date, "to_date": to_date})
 
 
 @app.post("/updatenotice/{messageno}", response_class=HTMLResponse)
-async def update_clubdtl(request: Request, messageno: int, db: AsyncSession = Depends(get_db)):
+async def update_classdtl(request: Request, messageno: int, db: AsyncSession = Depends(get_db)):
     user_No = request.session.get("user_No")
     user_Name = request.session.get("user_Name")
-    user_region = request.session.get("user_Region")
-    user_classno = request.session.get("user_Classno")
+    user_classno = request.session.get("user_Class")
     form_data = await request.form()
     data4update = {
         "messageTitle": form_data.get("nottitle"),
@@ -883,30 +871,28 @@ async def update_clubdtl(request: Request, messageno: int, db: AsyncSession = De
     update_fields["messageNo"] = messageno
     await db.execute(query, update_fields)
     await db.commit()
-    return RedirectResponse(f"/listnotice/{user_region}", status_code=303)
+    return RedirectResponse(f"/listnotice/0", status_code=303)
 
 
 @app.post("/removenotice/{messageno}", response_class=HTMLResponse)
 async def remove(request: Request, messageno: int, db: AsyncSession = Depends(get_db)):
     user_No = request.session.get("user_No")
     user_Name = request.session.get("user_Name")
-    user_region = request.session.get("user_Region")
-    user_classno = request.session.get("user_Classno")
+    user_classno = request.session.get("user_Class")
     query = text(f"UPDATE boardMessage SET attrib = :XXUP WHERE messageNo = :messageNo")
     await db.execute(query, {"XXUP":"XXXUPXXXUP", "messageNo": messageno})
     await db.commit()
-    return RedirectResponse(f"/listnotice/{user_region}", status_code=303)
+    return RedirectResponse(f"/listnotice/0", status_code=303)
 
 
-@app.post("/insertnotice/{regionno}", response_class=HTMLResponse)
-async def insertnotice(request: Request, regionno: int, db: AsyncSession = Depends(get_db)):
+@app.post("/insertnotice/{colleageno}", response_class=HTMLResponse)
+async def insertnotice(request: Request, colleageno: int, db: AsyncSession = Depends(get_db)):
     user_No = request.session.get("user_No")
     user_Name = request.session.get("user_Name")
-    user_region = request.session.get("user_Region")
-    user_classno = request.session.get("user_Classno")
+    user_classno = request.session.get("user_Class")
     form_data = await request.form()
     data4insert = {
-        "classNo": regionno,
+        "classNo": colleageno,
         "messageTitle": form_data.get("nottitle"),
         "MessageConts": form_data.get("notmessage"),
         "noticeFrom": form_data.get("notfrom"),
@@ -918,30 +904,23 @@ async def insertnotice(request: Request, regionno: int, db: AsyncSession = Depen
     query = text(f"INSERT INTO boardMessage ({columns}) VALUES ({values})")
     await db.execute(query, insert_fields)
     await db.commit()
-    return RedirectResponse(f"/listnotice/{user_region}", status_code=303)
+    return RedirectResponse(f"/listnotice/0", status_code=303)
 
 
-@app.post("/updateclub/{classno}", response_class=HTMLResponse)
-async def update_clubdtl(request: Request, classno: int, db: AsyncSession = Depends(get_db)):
+@app.post("/updateclass/{classno}", response_class=HTMLResponse)
+async def update_classdtl(request: Request, classno: int, db: AsyncSession = Depends(get_db)):
     form_data = await request.form()
     data4update = {
-        "clubName": form_data.get("clubname"),
-        "estDate": form_data.get("estdate"),
-        "classNo": form_data.get("regno"),
-        "officeAddr": form_data.get("offaddr"),
-        "officeTel": form_data.get("offtel"),
-        "officeFax": form_data.get("offfax"),
-        "officeEmail": form_data.get("offemail"),
-        "officeWeb": form_data.get("offweb"),
-        "modDate": datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+        "classTitle": form_data.get("classname"),
+        "modDate": "now()",
     }
     update_fields = {key: value for key, value in data4update.items() if value is not None}
     set_clause = ", ".join([f"{key} = :{key}" for key in update_fields.keys()])
-    query = text(f"UPDATE chyClass SET {set_clause} WHERE clubNo = :clubNo")
-    update_fields["clubNo"] = classno
+    query = text(f"UPDATE chyClass SET {set_clause} WHERE classNo = :classNo")
+    update_fields["classNo"] = classno
     await db.execute(query, update_fields)
     await db.commit()
-    return RedirectResponse(f"/editclub/{classno}", status_code=303)
+    return RedirectResponse(f"/classList", status_code=303)
 
 
 @app.get("/classList", response_class=HTMLResponse)
@@ -961,28 +940,26 @@ async def classList(request: Request, db: AsyncSession = Depends(get_db)):
 async def rankList(request: Request, db: AsyncSession = Depends(get_db)):
     user_No = request.session.get("user_No")
     user_Name = request.session.get("user_Name")
-    user_region = request.session.get("user_Region")
-    user_classno = request.session.get("user_Classno")
+    user_classno = request.session.get("user_Class")
     rank_list = await get_ranklist(db)
     if not user_No:
         return RedirectResponse(url="/")
     return templates.TemplateResponse("admin/rankList.html",
                                       {"request": request, "user_No": user_No, "user_Name": user_Name,
-                                       "rank_list": rank_list, "user_region": user_region, "user_classno": user_classno})
+                                       "rank_list": rank_list,  "user_classno": user_classno})
 
 
 @app.get("/rankDetail/{rankno}", response_class=HTMLResponse)
 async def rankDtl(request: Request, rankno: int, db: AsyncSession = Depends(get_db)):
     user_No = request.session.get("user_No")
     user_Name = request.session.get("user_Name")
-    user_region = request.session.get("user_Region")
-    user_classno = request.session.get("user_Classno")
+    user_classno = request.session.get("user_Class")
     rank_dtl = await get_rankdtl(rankno, db)
     if not user_No:
         return RedirectResponse(url="/")
     return templates.TemplateResponse("admin/rankDetail.html",
                                       {"request": request, "user_No": user_No, "user_Name": user_Name,
-                                       "rank_dtl": rank_dtl, "user_region": user_region, "user_classno": user_classno})
+                                       "rank_dtl": rank_dtl,  "user_classno": user_classno})
 
 
 @app.post("/update_rank/{rankno}", response_class=HTMLResponse)
@@ -1009,34 +986,33 @@ async def add_rank(request: Request, db: AsyncSession = Depends(get_db)):
     query = text(
         f"INSERT INTO chyRank (rankTitlekor, rankTitleeng, rankDiv, orderNo) values (:rankTitlekor, :rankTitleeng, :rankDiv, :orderNo)")
     await db.execute(query,
-                     {"rankTitlekor": "새로 등록된 직책", "rankTitleeng": "New Rank", "rankDiv": "CLUB", "orderNo": "0"})
+                     {"rankTitlekor": "새로 등록된 직책", "rankTitleeng": "New Rank", "rankDiv": "HEAD", "orderNo": "0"})
     await db.commit()
     return RedirectResponse(f"/rankList", status_code=303)
 
 
-@app.get("/clubStaff/{classno}/{clubName}", response_class=HTMLResponse)
-async def clubstaff(request: Request, classno: int, clubName: str, db: AsyncSession = Depends(get_db)):
+@app.get("/classStaff/{classno}/{className}", response_class=HTMLResponse)
+async def classstaff(request: Request, classno: int, className: str, db: AsyncSession = Depends(get_db)):
     user_No = request.session.get("user_No")
     user_Name = request.session.get("user_Name")
-    user_region = request.session.get("user_Region")
-    user_classno = request.session.get("user_Classno")
-    staff_dtl = await get_clubstaff(classno, db)
-    clubmember = await get_clubmemberlist(classno, db)
+    user_classno = request.session.get("user_Class")
+    staff_dtl = await get_classstaff(classno, db)
+    classmember = await get_classmemberlist(classno, db)
     if not user_No:
         return RedirectResponse(url="/")
-    return templates.TemplateResponse("admin/clubStaff.html",
+    return templates.TemplateResponse("admin/classStaff.html",
                                       {"request": request, "user_No": user_No, "user_Name": user_Name,
-                                       "clubName": clubName, "classno": classno,
-                                       "staff_dtl": staff_dtl, "clubmember": clubmember, "user_region": user_region, "user_classno": user_classno})
+                                       "className": className, "classno": classno,
+                                       "staff_dtl": staff_dtl, "classmember": classmember,  "user_classno": user_classno})
 
 
 @app.post("/updatestaff/{classno}", response_class=HTMLResponse)
 async def update_stff(request: Request, classno: int, db: AsyncSession = Depends(get_db)):
     form_data = await request.form()
-    clubName = form_data.get("clubname")
+    className = form_data.get("classname")
     data4update = {
         "logPeriod": form_data.get("dutyyear"),
-        "clubNo": classno,
+        "classNo": classno,
         "presidentNo": form_data.get("presno"),
         "secretNo": form_data.get("secrno"),
         "trNo": form_data.get("trsuno"),
@@ -1048,58 +1024,26 @@ async def update_stff(request: Request, classno: int, db: AsyncSession = Depends
         "thirdViceNo": form_data.get("tviceno"),
         "slog": form_data.get("slog"),
     }
-    queryb = text(f"UPDATE chyClassstaff set attrib = :attrib WHERE clubNo = :clubNo")
-    await db.execute(queryb, {"attrib": 'XXXUPXXXUP', "clubNo": classno})
+    queryb = text(f"UPDATE chyClassstaff set attrib = :attrib WHERE classNo = :classNo")
+    await db.execute(queryb, {"attrib": 'XXXUPXXXUP', "classNo": classno})
     query = text(
-        f"INSERT INTO chyClassstaff (logPeriod,clubNo,presidentNo,secretNo,trNo,ltNo,ttNo,prpresidentNo,firstViceNo,secondViceNo,thirdViceNo,slog) values (:logPeriod,:clubNo,:presidentNo,:secretNo,:trNo,:ltNo,:ttNo,:prpresidentNo,:firstViceNo,:secondViceNo,:thirdViceNo,:slog)")
+        f"INSERT INTO chyClassstaff (logPeriod,classNo,presidentNo,secretNo,trNo,ltNo,ttNo,prpresidentNo,firstViceNo,secondViceNo,thirdViceNo,slog) values (:logPeriod,:classNo,:presidentNo,:secretNo,:trNo,:ltNo,:ttNo,:prpresidentNo,:firstViceNo,:secondViceNo,:thirdViceNo,:slog)")
     await db.execute(query, data4update)
     await db.commit()
-    return RedirectResponse(f"/clubStaff/{classno}/{clubName}", status_code=303)
-
-
-@app.get("/regionList", response_class=HTMLResponse)
-async def dictList(request: Request, db: AsyncSession = Depends(get_db)):
-    user_No = request.session.get("user_No")
-    user_Name = request.session.get("user_Name")
-    user_region = request.session.get("user_Region")
-    user_classno = request.session.get("user_Classno")
-    region_list = await get_regionlist(db)
-    if not user_No:
-        return RedirectResponse(url="/")
-    return templates.TemplateResponse("admin/regionList.html",
-                                      {"request": request, "user_No": user_No, "user_Name": user_Name,
-                                       "region_list": region_list, "user_region": user_region, "user_classno": user_classno})
-
-
-@app.get("/editregion/{regno}", response_class=HTMLResponse)
-async def editclub(request: Request, regno: int, db: AsyncSession = Depends(get_db)):
-    user_No = request.session.get("user_No")
-    user_Name = request.session.get("user_Name")
-    user_region = request.session.get("user_Region")
-    user_classno = request.session.get("user_Classno")
-    query = text("SELECT * FROM chyRegion where classNo = :regNo and attrib not like :atts")
-    result = await db.execute(query, {"regNo": regno, "atts": "%XXX%"})
-    regiondtl = result.fetchone()
-    rankmembers = await get_rankmemberlist(15, db)
-    if not user_No:
-        return RedirectResponse(url="/")
-    return templates.TemplateResponse("admin/regionDetail.html",
-                                      {"request": request, "user_No": user_No, "user_Name": user_Name,
-                                       "regiondtl": regiondtl, "rankmembers": rankmembers, "user_region": user_region, "user_classno": user_classno})
+    return RedirectResponse(f"/classStaff/{classno}/{className}", status_code=303)
 
 
 @app.get("/editbis/{memberno}", response_class=HTMLResponse)
 async def editbis(request: Request, memberno: int, db: AsyncSession = Depends(get_db)):
     user_No = request.session.get("user_No")
     user_Name = request.session.get("user_Name")
-    user_region = request.session.get("user_Region")
-    user_classno = request.session.get("user_Classno")
+    user_classno = request.session.get("user_Class")
     query = text("SELECT * FROM memberBusiness where memberNo = :memberno and attrib not like :atts")
     result = await db.execute(query, {"memberno": memberno, "atts": "%XXX%"})
     bisdtl = result.fetchone()
     return templates.TemplateResponse("business/regBis.html",
                                       {"request": request, "user_No": user_No, "user_Name": user_Name,
-                                       "memberno": memberno, "user_region": user_region, "user_classno": user_classno,
+                                       "memberno": memberno,  "user_classno": user_classno,
                                        "bisdtl": bisdtl})
 
 
@@ -1129,66 +1073,43 @@ async def update_bisdtl(request: Request, memberno: int, db: AsyncSession = Depe
     return RedirectResponse(f"/editbis/{memberno}", status_code=303)
 
 
-@app.post("/updateregion/{regno}", response_class=HTMLResponse)
-async def update_regdtl(request: Request, regno: int, db: AsyncSession = Depends(get_db)):
-    form_data = await request.form()
-    data4update = {
-        "classNo": form_data.get("regno"),
-        "chairmanNo": form_data.get("chairmno"),
-        "regionSlog": form_data.get("slog"),
-        "yearFrom": form_data.get("yearfrom"),
-        "yearTo": form_data.get("yearto"),
-    }
-    mdatenow = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    queryup = text(f"UPDATE chyRegion SET attrib = :attr, modDate = :mdate WHERE classNo = :regno")
-    await db.execute(queryup, {"regno": regno, "attr": "XXXUPXXXUP", "mdate": mdatenow})
-    query = text(
-        f"INSERT INTO chyRegion (classNo,chairmanNo,regionSlog,yearFrom,yearTo) values (:classNo,:chairmanNo,:regionSlog, :yearFrom, :yearTo)")
-    await db.execute(query, data4update)
-    await db.commit()
-    return RedirectResponse(f"/editregion/{regno}", status_code=303)
-
-
-@app.get("/boardManager/{regionno}", response_class=HTMLResponse)
-async def boardManager(request: Request, regionno: int, db: AsyncSession = Depends(get_db)):
+@app.get("/boardManager/{colleageno}", response_class=HTMLResponse)
+async def boardManager(request: Request, colleageno: int, db: AsyncSession = Depends(get_db)):
     user_No = request.session.get("user_No")
     user_Name = request.session.get("user_Name")
-    user_region = request.session.get("user_Region")
-    user_classno = request.session.get("user_Classno")
-    clublist = await get_regionboardlist(regionno, db)
+    user_classno = request.session.get("user_Class")
+    classlist = await get_colleageboardlist(colleageno, db)
     if not user_No:
         return RedirectResponse(url="/")
     return templates.TemplateResponse("board/boardMain.html",
                                       {"request": request, "user_No": user_No, "user_Name": user_Name,
-                                       "clublist": clublist, "user_Region": user_region, "user_Classno": user_classno})
+                                       "classlist": classlist, "user_Class": user_classno})
 
 
-@app.get("/boardList/{classno}/{clubname}", response_class=HTMLResponse)
-async def clubboardlist(request: Request, classno: int, clubname: str, db: AsyncSession = Depends(get_db)):
+@app.get("/boardList/{classno}/{classname}", response_class=HTMLResponse)
+async def classboardlist(request: Request, classno: int, classname: str, db: AsyncSession = Depends(get_db)):
     user_No = request.session.get("user_No")
     user_Name = request.session.get("user_Name")
-    user_region = request.session.get("user_Region")
-    user_classno = request.session.get("user_Classno")
-    clubboards = await get_clubboards(classno, db)
+    user_classno = request.session.get("user_Class")
+    classboards = await get_classboards(classno, db)
     if not user_No:
         return RedirectResponse(url="/")
-    return templates.TemplateResponse("board/clubboardlist.html",
+    return templates.TemplateResponse("board/classboardlist.html",
                                       {"request": request, "user_No": user_No, "user_Name": user_Name,
-                                       "clubboards": clubboards, "clubname": clubname, "user_classno": classno, "user_region": user_region})
+                                       "classboards": classboards, "classname": classname, "user_classno": classno})
 
 
-@app.get("/editboard/{boardno}/{clubname}", response_class=HTMLResponse)
-async def editboard(request: Request, boardno: int, clubname: str, db: AsyncSession = Depends(get_db)):
+@app.get("/editboard/{boardno}/{classname}", response_class=HTMLResponse)
+async def editboard(request: Request, boardno: int, classname: str, db: AsyncSession = Depends(get_db)):
     user_No = request.session.get("user_No")
     user_Name = request.session.get("user_Name")
-    user_region = request.session.get("user_Region")
-    user_classno = request.session.get("user_Classno")
+    user_classno = request.session.get("user_Class")
     boarddtl = await get_boarddtl(boardno, db)
     if not user_No:
         return RedirectResponse(url="/")
     return templates.TemplateResponse("board/editboard.html",
                                       {"request": request, "user_No": user_No, "user_Name": user_Name,
-                                       "boarddtl": boarddtl, "clubname": clubname, "user_region": user_region, "user_classno": user_classno })
+                                       "boarddtl": boarddtl, "classname": classname,  "user_classno": user_classno })
 
 
 @app.api_route("/addboard/{classno}", response_class=HTMLResponse, methods=["GET", "POST"])
@@ -1200,8 +1121,8 @@ async def addboard(request: Request, classno: int, db: AsyncSession = Depends(ge
     btype = form_data.get("btype")
     if not btype:
         btype = "BOARD"
-    query = text(f"INSERT into chyBoard (clubNo, boardTitle, boardType) values (:clubNo, :boardTitle, :boardType)")
-    await db.execute(query, {"clubNo": classno, "boardTitle": btitle, "boardType": btype})
+    query = text(f"INSERT into chyBoard (classNo, boardTitle, boardType) values (:classNo, :boardTitle, :boardType)")
+    await db.execute(query, {"classNo": classno, "boardTitle": btitle, "boardType": btype})
     await db.commit()
     return RedirectResponse(f"/boardList/{classno}", status_code=303)
 
@@ -1210,14 +1131,13 @@ async def addboard(request: Request, classno: int, db: AsyncSession = Depends(ge
 async def requestlist(request: Request, db: AsyncSession = Depends(get_db)):
     user_No = request.session.get("user_No")
     user_Name = request.session.get("user_Name")
-    user_region = request.session.get("user_Region")
-    user_classno = request.session.get("user_Classno")
+    user_classno = request.session.get("user_Class")
     requests = await get_requests(db)
     if not user_No:
         return RedirectResponse(url="/")
     return templates.TemplateResponse("board/requestlist.html",
                                       {"request": request, "user_No": user_No, "user_Name": user_Name,
-                                       "requests": requests, "user_region": user_region, "user_classno": user_classno})
+                                       "requests": requests,  "user_classno": user_classno})
 
 
 @app.post("/updaterequest/{requestno}", response_class=HTMLResponse)
@@ -1230,7 +1150,7 @@ async def updaterequest(request: Request, requestno: int, db: AsyncSession = Dep
 
 @app.get("/slimage/{classno}")
 async def slogan_image(classno: int, db: AsyncSession = Depends(get_db)):
-    staff = await get_clubstaffwithname(classno, db)
+    staff = await get_classstaffwithname(classno, db)
     slogan = staff[1] if staff else "No Slogan"
     memberno = staff[2] if staff else 0
     name = staff[3]+"L" if staff else "No Name"
@@ -1250,15 +1170,15 @@ async def slogan_image(classno: int, db: AsyncSession = Depends(get_db)):
     return StreamingResponse(buf, media_type="image/png")
 
 
-@app.api_route("/updateboard/{boardno}/{classno}/{clubname}", response_class=HTMLResponse, methods=["GET", "POST"])
-async def addboard(request: Request, boardno: int, classno: int, clubname: str, db: AsyncSession = Depends(get_db)):
+@app.api_route("/updateboard/{boardno}/{classno}/{classname}", response_class=HTMLResponse, methods=["GET", "POST"])
+async def addboard(request: Request, boardno: int, classno: int, classname: str, db: AsyncSession = Depends(get_db)):
     form_data = await request.form()
     btitle = form_data.get("btitle")
     btype = form_data.get("btype")
     query = text(f"update chyBoard set boardTitle=:boardTitle,boardType=:boardType where boardNo=:boardNo")
     await db.execute(query, {"boardNo": boardno, "boardTitle": btitle, "boardType": btype})
     await db.commit()
-    return RedirectResponse(f"/boardList/{classno}/{clubname}", status_code=303)
+    return RedirectResponse(f"/boardList/{classno}/{classname}", status_code=303)
 
 
 # 로그아웃 처리
@@ -1268,24 +1188,24 @@ async def logout(request: Request):
     return RedirectResponse(url="/")
 
 
-@app.get("/phapp/clubList/{regionno}")
-async def phappclublist(regionno: int, db: AsyncSession = Depends(get_db)):
+@app.get("/phapp/classList/{colleageno}")
+async def phappclasslist(colleageno: int, db: AsyncSession = Depends(get_db)):
     try:
-        query = text("SELECT clubNo, clubName, classNo FROM chyClass where classNo = :classNo ")
-        result = await db.execute(query, {"classNo": regionno})
+        query = text("SELECT classNo, className, classNo FROM chyClass where classNo = :classNo ")
+        result = await db.execute(query, {"classNo": colleageno})
         rows = result.fetchall()
-        result = [{"clubNo": row[0], "clubName": row[1], "classNo": row[2]} for row in rows]
+        result = [{"classNo": row[0], "className": row[1], "classNo": row[2]} for row in rows]
     except:
         print("error")
     finally:
-        return {"clubs": result}
+        return {"classs": result}
 
 
 @app.get("/phapp/memberList/{classno}")
 async def phappmemberlist(classno: int, db: AsyncSession = Depends(get_db)):
     try:
         query = text(
-            "SELECT lm.memberNo, lm.memberName, lm.memberPhone, lr.rankTitlekor FROM chyMember lm left join chyRank lr on lm.rankNo = lr.rankNo where lm.clubNo = :classno order by lm.memberJoindate")
+            "SELECT lm.memberNo, lm.memberName, lm.memberPhone, lr.rankTitlekor FROM chyMember lm left join chyRank lr on lm.rankNo = lr.rankNo where lm.classNo = :classno order by lm.memberJoindate")
         result = await db.execute(query, {"classno": classno})
         rows = result.fetchall()
         result = [{"memberNo": row[0], "memberName": row[1], "memberPhone": row[2], "rankTitle": row[3]} for row in
@@ -1296,11 +1216,11 @@ async def phappmemberlist(classno: int, db: AsyncSession = Depends(get_db)):
         return {"members": result}
 
 
-@app.get("/phapp/clubdocs/{classno}")
-async def clubdocs(classno: int, db: AsyncSession = Depends(get_db)):
+@app.get("/phapp/classdocs/{classno}")
+async def classdocs(classno: int, db: AsyncSession = Depends(get_db)):
     try:
         query = text(
-            "SELECT * from chyDoc where clubNo = :classno and attrib not like :attrib")
+            "SELECT * from chyDoc where classNo = :classno and attrib not like :attrib")
         result = await db.execute(query, {"classno": classno, "attrib": "%XXX%"})
         rows = result.fetchall()
         result = [{"docNo": row[0], "docType": row[2], "docTitle": row[3]} for row in rows]
@@ -1324,12 +1244,12 @@ async def docviewer(docno: int, db: AsyncSession = Depends(get_db)):
         return {"doc": result}
 
 
-@app.get("/phapp/notice/{regionno}")
-async def notice(regionno: int, db: AsyncSession = Depends(get_db)):
+@app.get("/phapp/notice/{colleageno}")
+async def notice(colleageno: int, db: AsyncSession = Depends(get_db)):
     try:
         query = text(
-            "SELECT * from boardMessage where classNo = :regionno and attrib not like :attrib")
-        result = await db.execute(query, {"regionno": regionno, "attrib": "%XXX%"})
+            "SELECT * from boardMessage where classNo = :colleageno and attrib not like :attrib")
+        result = await db.execute(query, {"colleageno": colleageno, "attrib": "%XXX%"})
         rows = result.fetchall()
         result = [{"noticeNo": row[0], "writer": row[3], "noticeTitle": row[4]} for row in rows]
     except:
@@ -1356,14 +1276,14 @@ async def notice(messageno: int, db: AsyncSession = Depends(get_db)):
 async def phapprmemberlist(db: AsyncSession = Depends(get_db)):
     try:
         query = text(
-            "SELECT lm.memberNo, lm.memberName, lm.memberPhone, lr.rankTitlekor, lc.clubName FROM chyMember lm "
+            "SELECT lm.memberNo, lm.memberName, lm.memberPhone, lr.rankTitlekor, lc.className FROM chyMember lm "
             "left join chyRank lr on lm.rankNo = lr.rankNo "
-            "left join chyClass lc on lm.clubNo = lc.clubNo "
+            "left join chyClass lc on lm.classNo = lc.classNo "
             "where lm.rankNo != :rankno order by lm.memberJoindate ")
         result = await db.execute(query, {"rankno": 19})  # 회원 제외
         rows = result.fetchall()
         result = [
-            {"memberNo": row[0], "memberName": row[1], "memberPhone": row[2], "rankTitle": row[3], "clubName": row[4]}
+            {"memberNo": row[0], "memberName": row[1], "memberPhone": row[2], "rankTitle": row[3], "className": row[4]}
             for row in
             rows]
     except:
@@ -1372,18 +1292,18 @@ async def phapprmemberlist(db: AsyncSession = Depends(get_db)):
         return {"members": result}
 
 
-@app.get("/phapp/rnkmemberList/{regionno}")
-async def phapprnkmemberlist(regionno:int,db: AsyncSession = Depends(get_db)):
+@app.get("/phapp/rnkmemberList/{colleageno}")
+async def phapprnkmemberlist(colleageno:int,db: AsyncSession = Depends(get_db)):
     try:
         query = text(
-            "SELECT lm.memberNo, lm.memberName, lm.memberPhone, lr.rankTitlekor, lc.clubName FROM chyMember lm "
+            "SELECT lm.memberNo, lm.memberName, lm.memberPhone, lr.rankTitlekor, lc.className FROM chyMember lm "
             "left join chyRank lr on lm.rankNo = lr.rankNo "
-            "left join chyClass lc on lm.clubNo = lc.clubNo "
-            "where lm.rankNo != :rankno and lc.classNo = :regionno order by lm.memberJoindate ")
-        result = await db.execute(query, {"rankno": 19, "regionno": regionno})  # 회원 제외
+            "left join chyClass lc on lm.classNo = lc.classNo "
+            "where lm.rankNo != :rankno and lc.classNo = :colleageno order by lm.memberJoindate ")
+        result = await db.execute(query, {"rankno": 19, "colleageno": colleageno})  # 회원 제외
         rows = result.fetchall()
         result = [
-            {"memberNo": row[0], "memberName": row[1], "memberPhone": row[2], "rankTitle": row[3], "clubName": row[4]}
+            {"memberNo": row[0], "memberName": row[1], "memberPhone": row[2], "rankTitle": row[3], "className": row[4]}
             for row in
             rows]
     except:
@@ -1398,9 +1318,9 @@ async def searchmember(keywd: str, db: AsyncSession = Depends(get_db)):
         keywd = f"%{keywd}%"
         print(keywd)
         query = text(
-            "SELECT lm.memberNo, lm.memberName, lm.memberPhone, lr.rankTitlekor, lc.clubName FROM chyMember lm "
+            "SELECT lm.memberNo, lm.memberName, lm.memberPhone, lr.rankTitlekor, lc.className FROM chyMember lm "
             "left join chyRank lr on lm.rankNo = lr.rankNo "
-            "left join chyClass lc on lm.clubNo = lc.clubNo "
+            "left join chyClass lc on lm.classNo = lc.classNo "
             "left join memberBusiness mb on lm.memberNo = mb.memberNo "
             "where lm.memberName like :keyword or lm.memberPhone like :keyword or lm.memberAddress like :keyword "
             "or lm.memberEmail like :keyword or lm.addMemo like :keyword or lm.officeAddress like :keyword "
@@ -1408,7 +1328,7 @@ async def searchmember(keywd: str, db: AsyncSession = Depends(get_db)):
         result = await db.execute(query, {"keyword": keywd})  # 키워드 검색
         rows = result.fetchall()
         result = [
-            {"memberNo": row[0], "memberName": row[1], "memberPhone": row[2], "rankTitle": row[3], "clubName": row[4]}
+            {"memberNo": row[0], "memberName": row[1], "memberPhone": row[2], "rankTitle": row[3], "className": row[4]}
             for row in rows]
         print(result)
     except:
@@ -1417,22 +1337,22 @@ async def searchmember(keywd: str, db: AsyncSession = Depends(get_db)):
         return {"members": result}
 
 
-@app.get("/phapp/rsearchmember/{regionno}/{keywd}")
-async def rsearchmember(regionno:int, keywd: str, db: AsyncSession = Depends(get_db)):
+@app.get("/phapp/rsearchmember/{colleageno}/{keywd}")
+async def rsearchmember(colleageno:int, keywd: str, db: AsyncSession = Depends(get_db)):
     try:
         keywd = f"%{keywd}%"
         query = text(
-            "SELECT DISTINCT lm.memberNo, lm.memberName, lm.memberPhone, lr.rankTitlekor, lc.clubName FROM chyMember lm "
+            "SELECT DISTINCT lm.memberNo, lm.memberName, lm.memberPhone, lr.rankTitlekor, lc.className FROM chyMember lm "
             "left join chyRank lr on lm.rankNo = lr.rankNo "
-            "left join chyClass lc on lm.clubNo = lc.clubNo "
+            "left join chyClass lc on lm.classNo = lc.classNo "
             "left join memberBusiness mb on lm.memberNo = mb.memberNo "
-            "where lc.classNo = :regionno AND (lm.memberName like :keyword or lm.memberPhone like :keyword or lm.memberAddress like :keyword "
+            "where lc.classNo = :colleageno AND (lm.memberName like :keyword or lm.memberPhone like :keyword or lm.memberAddress like :keyword "
             "or lm.memberEmail like :keyword or lm.addMemo like :keyword or lm.officeAddress like :keyword "
             "or mb.bisTitle like :keyword or mb.bisType like :keyword or mb.bistypeTitle like :keyword or mb.bisMemo like :keyword) order by lm.memberJoindate")
-        result = await db.execute(query, {"keyword": keywd, "regionno":regionno})  # 키워드 검색
+        result = await db.execute(query, {"keyword": keywd, "colleageno":colleageno})  # 키워드 검색
         rows = result.fetchall()
         result = [
-            {"memberNo": row[0], "memberName": row[1], "memberPhone": row[2], "rankTitle": row[3], "clubName": row[4]}
+            {"memberNo": row[0], "memberName": row[1], "memberPhone": row[2], "rankTitle": row[3], "className": row[4]}
             for row in rows]
     except:
         print("error")
@@ -1447,22 +1367,22 @@ async def phappmemberlist(memberno: int, db: AsyncSession = Depends(get_db)):
             "WITH LatestPhoto AS (SELECT mPhoto, memberNo,ROW_NUMBER() OVER (PARTITION BY memberNo ORDER BY regDate DESC) AS rn FROM memberPhoto ),"
             "LatestNC AS ( SELECT ncardPhoto, memberNo,ROW_NUMBER() OVER (PARTITION BY memberNo ORDER BY regDate DESC) AS rn FROM memberNamecard ),"
             "LatestSP AS ( SELECT spousePhoto, memberNo,ROW_NUMBER() OVER (PARTITION BY memberNo ORDER BY regDate DESC) AS rn FROM memberSpouse )"
-            "SELECT lm.*, (TO_BASE64(lp.mPhoto)), lr.rankTitlekor, lc.clubName, (TO_BASE64(ln.ncardPhoto)), (TO_BASE64(ls.spousePhoto)), mb.* FROM chyMember lm "
+            "SELECT lm.*, (TO_BASE64(lp.mPhoto)), lr.rankTitlekor, lc.className, (TO_BASE64(ln.ncardPhoto)), (TO_BASE64(ls.spousePhoto)), mb.* FROM chyMember lm "
             "left join latestPhoto lp on lm.memberNo = lp.memberNo and lp.rn = 1 "
             "left join latestNC ln on lm.memberNo = ln.memberNo and ln.rn = 1 "
             "left join latestSP ls on ls.memberNo = ln.memberNo and ls.rn = 1 "
             "left join chyRank lr on lm.rankNo = lr.rankNo "
-            "left join chyClass lc on lm.clubNo = lc.clubNo "
+            "left join chyClass lc on lm.classNo = lc.classNo "
             "left join memberBusiness mb on lm.memberNo = mb.memberNo "
             "where lm.memberNo = :memberno")
         result = await db.execute(query, {"memberno": memberno})
         rows = result.fetchone()
         if rows[17]=='N':
             result = [{"memberNo": rows[0], "memberName": rows[1], "memberPhone": rows[6], "mPhotoBase64": rows[18],
-                   "clubNo": rows[9],
+                   "classNo": rows[9],
                    "rankTitle": rows[19], "memberMF": rows[2], "memberAddress": rows[5], "memberEmail": rows[7],
                    "memberJoindate": rows[8],
-                   "addMemo": rows[11], "memberBirth": rows[3], "clubName": rows[20], "nameCard": rows[21],
+                   "addMemo": rows[11], "memberBirth": rows[3], "className": rows[20], "nameCard": rows[21],
                    "officeAddress": rows[13],
                    "spouseName": rows[14], "spousePhone": rows[15], "spouseBirth": rows[16], "spousePhoto": rows[22],
                    "bisTitle": rows[25], "bisRank": rows[26], "bisType": rows[27], "bistypeTitle": rows[28],
@@ -1471,10 +1391,10 @@ async def phappmemberlist(memberno: int, db: AsyncSession = Depends(get_db)):
                    "offSns": rows[34], "bisMemo": rows[35]}]
         else:
             result = [{"memberNo": rows[0], "memberName": rows[1], "memberPhone": rows[6], "mPhotoBase64": rows[18],
-                       "clubNo": rows[9],
+                       "classNo": rows[9],
                        "rankTitle": rows[19], "memberMF": rows[2], "memberAddress": "비공개", "memberEmail": "비공개",
                        "memberJoindate": rows[8],
-                       "addMemo": rows[11], "memberBirth": "비공개", "clubName": rows[20], "nameCard": "",
+                       "addMemo": rows[11], "memberBirth": "비공개", "className": rows[20], "nameCard": "",
                        "officeAddress": "비공개",
                        "spouseName": "비공개", "spousePhone": "비공개", "spouseBirth": "비공개",
                        "spousePhoto": "",
@@ -1491,7 +1411,7 @@ async def phappmemberlist(memberno: int, db: AsyncSession = Depends(get_db)):
 @app.get("/phapp/mlogin/{phoneno}")
 async def mlogin(phoneno: str, db: AsyncSession = Depends(get_db)):
     try:
-        query = text("SELECT clubNo, memberNo from chyMember where memberSeccode = :phoneno ")
+        query = text("SELECT classNo, memberNo from chyMember where memberSeccode = :phoneno ")
         result = await db.execute(query, {"phoneno": phoneno})
         rows = result.fetchone()
         if rows is None:
@@ -1504,11 +1424,11 @@ async def mlogin(phoneno: str, db: AsyncSession = Depends(get_db)):
         return result
 
 
-@app.get("/phapp/rlogin/{regionno}/{phoneno}")
-async def mlogin(regionno:int, phoneno: str, db: AsyncSession = Depends(get_db)):
+@app.get("/phapp/rlogin/{colleageno}/{phoneno}")
+async def mlogin(colleageno:int, phoneno: str, db: AsyncSession = Depends(get_db)):
     try:
-        query = text("SELECT lm.clubNo, lm.memberNo from chyMember lm left join chyClass lc on lc.clubNo = lm.clubNo where lm.memberSeccode = :phoneno and lc.classNo = :regionno")
-        result = await db.execute(query, {"phoneno": phoneno, "regionno": regionno})
+        query = text("SELECT lm.classNo, lm.memberNo from chyMember lm left join chyClass lc on lc.classNo = lm.classNo where lm.memberSeccode = :phoneno and lc.classNo = :colleageno")
+        result = await db.execute(query, {"phoneno": phoneno, "colleageno": colleageno})
         rows = result.fetchone()
         if rows is None:
             return {"error": "No data found for the given phone number."}

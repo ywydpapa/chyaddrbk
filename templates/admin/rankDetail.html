@@ -43,8 +43,9 @@
                                     <td>직책 구분</td>
                                     <td>
                                         <select name="ranktype" id="ranktype" class="form-control">
-                                            <option value="CLUB" {% if rank_dtl[3]== "CLUB" %}selected{% endif %}>클럽직책</option>
-                                            <option value="DIST" {% if rank_dtl[3]== "DIST" %}selected{% endif %}>지구직책</option>
+                                            <option value="HEAD" {% if rank_dtl[3]== "HEAD" %}selected{% endif %}>본부직책</option>
+                                            <option value="CLAS" {% if rank_dtl[3]== "CLAS" %}selected{% endif %}>기수직책</option>
+                                            <option value="CIRC" {% if rank_dtl[3]== "CIRC" %}selected{% endif %}>소모임직책</option>
                                         </select>
                                     </td>
                                 </tr>

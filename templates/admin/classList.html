@@ -15,24 +15,20 @@
             <!-- Begin Page Content -->
             <div class="container-fluid">
                 <!-- Page Heading -->
-                <h4 class="h3 mb-4 text-gray-800">클럽 정보 관리</h4>
+                <h4 class="h3 mb-4 text-gray-800">기수 정보 관리</h4>
                 <div>
                     <div style="float:right"></div>
-                    <table class="table" id="clublist">
+                    <table class="table" id="classlist">
                         <thead style="text-align: center">
-                        <th>클럽번호</th>
-                        <th>클럽명</th>
-                        <th>창립일</th>
+                        <th>기수번호</th>
+                        <th>기수명</th>
                         <th>집행부</th>
-                        <th>소속지역</th>
                         </thead>
-                        {% for club in club_list %}
+                        {% for class in class_list %}
                             <tr style="text-align: center">
-                                <td>{{ club[0] }}</td>
-                                <td><a href="/editclub/{{ club[0] }}">{{ club[1] }}</a></td>
-                                <td>{{ club[2] }}</td>
-                                <td><a href="/clubStaff/{{ club[0] }}/{{ club[1]}}">클럽 집행부 관리</a></td>
-                                <td>{{ club[3] }}</td>
+                                <td><a href="/classmemberCards/{{ class[1] }}">{{ class[1] }}</a></td>
+                                <td><a href="/classmemberList/{{ class[1] }}">{{ class[2] }}</a></td>
+                                <td><a href="/classStaff/{{ class[1] }}">클럽 집행부 관리</a></td>
                             </tr>
                         {% endfor %}
                     </table>
@@ -64,7 +60,7 @@
 </body>
 <script>
     $(document).ready(function () {
-        $('#clublist').DataTable({
+        $('#classlist').DataTable({
             "pageLength": 25,
             order: [[0, "asc"]]
         });
