@@ -663,8 +663,6 @@ async def memberList(request: Request, memberno: int, db: AsyncSession = Depends
     ranklist = await get_ranklist(db)
     if not user_No:
         return RedirectResponse(url="/")
-    if not user_No:
-        return RedirectResponse(url="/")
     return templates.TemplateResponse("member/memberDetail.html",
                                       {"request": request, "user_No": user_No, "user_Name": user_Name,
                                        "memberdtl": memberdtl, "myphoto": myphoto, "classlist": classlist,
